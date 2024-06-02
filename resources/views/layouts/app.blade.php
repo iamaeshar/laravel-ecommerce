@@ -13,6 +13,8 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
@@ -31,9 +33,6 @@
             <main class="px-3 py-5">
                 {{ $slot }}
             </main>
-
-            <!-- Stripe JS -->
-            <script src="https://js.stripe.com/v3/"></script>
         </div>
     </body>
 </html>

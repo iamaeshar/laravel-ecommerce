@@ -40,7 +40,8 @@
                                     <form action="{{ route('cart.remove', $item['id']) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Remove</button>
+                                        <button type="submit"
+                                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Remove</button>
                                     </form>
                                 </td>
                             </tr>
@@ -52,21 +53,49 @@
                 </div>
 
                 <!-- Payment Gateway Selection and Checkout Button -->
-                <div class="flex justify-end">
-                    <div class="mt-6 w-full md:w-1/4 align-right">
-                        <form action="#" method="POST">
-                            @csrf
-                            <div class="mb-4">
-                                <label for="payment_gateway" class="block text-lg font-medium text-gray-700">Select Payment Gateway:</label>
-                                <select id="payment_gateway" name="payment_gateway" class="mt-1 block w-full p-2 border rounded-md">
-                                    <option value="gateway1">Payment Gateway 1</option>
-                                    <option value="gateway2">Payment Gateway 2</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition">Checkout</button>
-                        </form>
-                    </div>
-                </div>
+                <button id="rzp-button1" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition">Pay Now ${{ number_format($total, 2) }}</button>
+
+                <script>
+                    var options = {
+                        "key": "rzp_test_tED2Fkg9vsmnV8",
+                        "amount": "{{ $total * 100 }}", 
+                        "currency": "USD",
+                        "name": "LaraShop",
+                        "description": "Test Transaction",
+                        "image": "http://34.239.113.93/logo.png",
+                        "order_id": "order_9A33XWu170gUtm_id1_1", // TODO 
+                        "handler": function(response) {
+                            alert(response.razorpay_payment_id);
+                            alert(response.razorpay_order_id);
+                            alert(response.razorpay_signature)
+                        },
+                        "prefill": { 
+                            "name": "{{ auth()->user()->name }}", 
+                            "email": "{{ auth()->user()->email }}",
+                            "contact": "9000090000" 
+                        },
+                        "notes": {
+                            "address": "Razorpay Corporate Office"
+                        },
+                        "theme": {
+                            "color": "#3399cc"
+                        }
+                    };
+                    var rzp1 = new Razorpay(options);
+                    rzp1.on('payment.failed', function(response) {
+                        alert(response.error.code);
+                        alert(response.error.description);
+                        alert(response.error.source);
+                        alert(response.error.step);
+                        alert(response.error.reason);
+                        alert(response.error.metadata.order_id);
+                        alert(response.error.metadata.payment_id);
+                    });
+                    document.getElementById('rzp-button1').onclick = function(e) {
+                        rzp1.open();
+                        e.preventDefault();
+                    }
+                </script>
             </div>
         @else
             <p class="text-lg">Your cart is empty.</p>
